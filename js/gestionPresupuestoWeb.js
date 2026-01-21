@@ -483,6 +483,31 @@ function cargarGastosWeb() {
   repintar();
 }
 
+function getUsuario() {
+  const input = document.getElementById("nombre_usuario");
+  return (input?.value ?? "").trim();
+}
+
+function urlApiBase() {
+  const usuario = getUsuario();
+  return `https://gestion-presupuesto-api.onrender.com/api/${encodeURIComponent(usuario)}`;
+}
+
+export async function cargarGastosApi() {
+  const usuario = getUsuario();
+  if (!usuario) {
+    alert("Introduce un nombre de usuario en el campo nombre_usuario");
+    return;
+  }
+
+  const resp = await fetch(urlApiBase(), { method: "GET" });
+  if (!resp.ok) throw new Error(`Error al cargar gastos API: ${resp.status}`);
+
+  const lista = await resp.json();
+  gp.cargarGastos(lista);
+  repintar();
+}
+
 const botonGuardar = document.getElementById("guardar-gastos");
 if (botonGuardar) {
   botonGuardar.addEventListener("click", guardarGastosWeb);
@@ -492,6 +517,12 @@ const botonCargar = document.getElementById("cargar-gastos");
 if (botonCargar) {
   botonCargar.addEventListener("click", cargarGastosWeb);
 }
+
+const botonCargarApi = document.getElementById("cargar-gastos-api");
+if (botonCargarApi) {
+  botonCargarApi.addEventListener("click", cargarGastosApi);
+}
+
 
 
 ponerTituloAntesDe("listado-gastos-filtrado-1", "Gastos filtrados 1");
