@@ -77,6 +77,17 @@ export function mostrarGastoWeb(idElemento, gasto) {
   btnBorrar.addEventListener("click", handleBorrar);
   wrap.appendChild(btnBorrar);
 
+const btnBorrarApi = document.createElement("button");
+btnBorrarApi.type = "button";
+btnBorrarApi.className = "gasto-borrar-api";
+btnBorrarApi.textContent = "Borrar (API)";
+
+const handleBorrarApi = new BorrarApiHandle();
+handleBorrarApi.gasto = gasto;
+
+btnBorrarApi.addEventListener("click", handleBorrarApi);
+wrap.appendChild(btnBorrarApi);
+
   const btnEditarFormulario = document.createElement("button");
   btnEditarFormulario.type = "button";
   btnEditarFormulario.className = "gasto-editar-formulario";
@@ -349,6 +360,27 @@ BorrarEtiquetasHandle.prototype.handleEvent = function () {
   this.gasto.borrarEtiquetas(this.etiqueta);
   repintar();
 };
+
+export function BorrarApiHandle() {}
+
+BorrarApiHandle.prototype.handleEvent = async function () {
+  const usuario = getUsuario();
+  if (!usuario) {
+    alert("Introduce un nombre de usuario en nombre_usuario");
+    return;
+  }
+
+  if (!this.gasto || !this.gasto.id) return;
+
+  const url = `${urlApiBase()}/${encodeURIComponent(this.gasto.id)}`;
+
+  const resp = await fetch(url, { method: "DELETE" });
+  if (!resp.ok) {
+    throw new Error(`Error borrando gasto API: ${resp.status}`);
+  }
+
+  await cargarGastosApi();
+}
 
 
 const botonPresupuesto = document.getElementById("actualizarpresupuesto");
