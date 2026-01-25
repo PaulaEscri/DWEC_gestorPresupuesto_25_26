@@ -404,6 +404,45 @@ export function nuevoGastoWebFormulario(event) {
   const boton = event.currentTarget
   let plantillaFormulario = document.getElementById("formulario-template").content.cloneNode(true);
   const formulario = plantillaFormulario.querySelector("form");
+  const btnEnviarApi = formulario.querySelector("button.gasto-enviar-api");
+
+if (btnEnviarApi) {
+  btnEnviarApi.addEventListener("click", async () => {
+    const usuario = getUsuario();
+    if (!usuario) {
+      alert("Introduce un nombre de usuario en el campo nombre_usuario");
+      return;
+    }
+
+    const descripcion = formulario.elements.descripcion.value;
+    const valor = Number(formulario.elements.valor.value);
+    const fecha = formulario.elements.fecha.value;
+    const etiquetas = formulario.elements.etiquetas.value;
+
+    const etiquetasArray = (etiquetas && etiquetas.trim() !== "")
+      ? etiquetas.split(",").map(e => e.trim()).filter(Boolean)
+      : [];
+
+    const body = {
+      descripcion,
+      valor,
+      fecha,
+      etiquetas: etiquetasArray
+    }
+
+    const resp = await fetch(urlApiBase(), {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body)
+    })
+
+    if (!resp.ok) {
+      throw new Error(`Error creando gasto API: ${resp.status}`);
+    }
+
+    await cargarGastosApi();
+  })
+}
 
   function manejarSubmit(event) {
     event.preventDefault();
