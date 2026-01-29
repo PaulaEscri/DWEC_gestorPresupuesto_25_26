@@ -642,7 +642,7 @@ if (botonCargarApi) {
   botonCargarApi.addEventListener("click", cargarGastosApi);
 }
 
-
+//
 
 ponerTituloAntesDe("listado-gastos-filtrado-1", "Gastos filtrados 1");
 ponerTituloAntesDe("listado-gastos-filtrado-2", "Gastos filtrados 2");
