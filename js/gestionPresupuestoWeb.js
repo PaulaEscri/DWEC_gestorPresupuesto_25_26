@@ -618,8 +618,13 @@ export async function cargarGastosApi() {
   if (!resp.ok) throw new Error(`Error al cargar gastos API: ${resp.status}`);
 
   const lista = await resp.json();
-  gp.cargarGastos(lista);
-  repintar();
+
+const listaNormalizada = lista.map(g => ({
+  ...g,
+  id: g.gastoId  
+}))
+gp.cargarGastos(listaNormalizada);
+repintar();
 }
 
 const botonGuardar = document.getElementById("guardar-gastos");
