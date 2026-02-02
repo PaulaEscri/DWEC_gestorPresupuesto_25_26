@@ -77,16 +77,16 @@ export function mostrarGastoWeb(idElemento, gasto) {
   btnBorrar.addEventListener("click", handleBorrar);
   wrap.appendChild(btnBorrar);
 
-const btnBorrarApi = document.createElement("button");
-btnBorrarApi.type = "button";
-btnBorrarApi.className = "gasto-borrar-api";
-btnBorrarApi.textContent = "Borrar (API)";
+  const btnBorrarApi = document.createElement("button");
+  btnBorrarApi.type = "button";
+  btnBorrarApi.className = "gasto-borrar-api";
+  btnBorrarApi.textContent = "Borrar (API)";
 
-const handleBorrarApi = new BorrarApiHandle();
-handleBorrarApi.gasto = gasto;
+  const handleBorrarApi = new BorrarApiHandle();
+  handleBorrarApi.gasto = gasto;
 
-btnBorrarApi.addEventListener("click", handleBorrarApi);
-wrap.appendChild(btnBorrarApi);
+  btnBorrarApi.addEventListener("click", handleBorrarApi);
+  wrap.appendChild(btnBorrarApi);
 
   const btnEditarFormulario = document.createElement("button");
   btnEditarFormulario.type = "button";
@@ -114,46 +114,49 @@ EditarHandleFormulario.prototype.handleEvent = function (event) {
   const formulario = plantillaFormulario.querySelector("form");
   const btnEnviarApi = formulario.querySelector("button.gasto-enviar-api");
 
-if (btnEnviarApi) {
-  btnEnviarApi.addEventListener("click", async () => {
-    const usuario = getUsuario();
-    if (!usuario) {
-      alert("Introduce un nombre de usuario en el campo nombre_usuario");
-      return;
-    }
-    if (!this.gasto || !this.gasto.id) return;
+  if (btnEnviarApi) {
+    btnEnviarApi.addEventListener("click", async () => {
+      const usuario = getUsuario();
+      if (!usuario) {
+        alert("Introduce un nombre de usuario en el campo nombre_usuario");
+        return;
+      }
+      if (!this.gasto || !this.gasto.id) return;
 
-    const descripcion = formulario.elements.descripcion.value;
-    const valor = Number(formulario.elements.valor.value);
-    const fecha = formulario.elements.fecha.value;
-    const etiquetas = formulario.elements.etiquetas.value;
+      const descripcion = formulario.elements.descripcion.value;
+      const valor = Number(formulario.elements.valor.value);
+      const fecha = formulario.elements.fecha.value;
+      const etiquetas = formulario.elements.etiquetas.value;
 
-    const etiquetasArray = (etiquetas && etiquetas.trim() !== "")
-      ? etiquetas.split(",").map(e => e.trim()).filter(Boolean)
-      : [];
+      const etiquetasArray = (etiquetas && etiquetas.trim() !== "")
+        ? etiquetas.split(",").map(e => e.trim()).filter(Boolean)
+        : [];
 
-    const body = {
-      descripcion,
-      valor,
-      fecha,
-      etiquetas: etiquetasArray
-    }
+      const body = {
+        descripcion,
+        valor,
+        fecha,
+        etiquetas: etiquetasArray
+      }
 
-    const url = `${urlApiBase()}/${encodeURIComponent(this.gasto.id)}`;
+      const url = `${urlApiBase()}/${encodeURIComponent(this.gasto.id)}`;
 
-    const resp = await fetch(url, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body)
+      const resp = await fetch(url, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body)
+      })
+
+      if (!resp.ok) {
+        throw new Error(`Error actualizando gasto API: ${resp.status}`);
+      }
+
+      await cargarGastosApi();
+      
+      formulario.remove();
+      boton.removeAttribute("disabled");
     })
-
-    if (!resp.ok) {
-      throw new Error(`Error actualizando gasto API: ${resp.status}`);
-    }
-
-    await cargarGastosApi();
-  })
-}
+  }
 
 
   formulario.elements.descripcion.value = this.gasto.descripcion ?? "";
@@ -220,8 +223,8 @@ if (btnEnviarApi) {
 
 
   boton.setAttribute("disabled", "disabled");
-const gastoDiv = boton.parentNode;
-gastoDiv.appendChild(plantillaFormulario);
+  const gastoDiv = boton.parentNode;
+  gastoDiv.appendChild(plantillaFormulario);
 }
 
 export function CancelarHandleFormulario() { }
@@ -404,7 +407,7 @@ BorrarEtiquetasHandle.prototype.handleEvent = function () {
   repintar();
 };
 
-export function BorrarApiHandle() {}
+export function BorrarApiHandle() { }
 
 BorrarApiHandle.prototype.handleEvent = async function () {
   const usuario = getUsuario();
@@ -449,43 +452,47 @@ export function nuevoGastoWebFormulario(event) {
   const formulario = plantillaFormulario.querySelector("form");
   const btnEnviarApi = formulario.querySelector("button.gasto-enviar-api");
 
-if (btnEnviarApi) {
-  btnEnviarApi.addEventListener("click", async () => {
-    const usuario = getUsuario();
-    if (!usuario) {
-      alert("Introduce un nombre de usuario en el campo nombre_usuario");
-      return;
-    }
+  if (btnEnviarApi) {
+    btnEnviarApi.addEventListener("click", async () => {
+      const usuario = getUsuario();
+      if (!usuario) {
+        alert("Introduce un nombre de usuario en el campo nombre_usuario");
+        return;
+      }
 
-    const descripcion = formulario.elements.descripcion.value;
-    const valor = Number(formulario.elements.valor.value);
-    const fecha = formulario.elements.fecha.value;
-    const etiquetas = formulario.elements.etiquetas.value;
+      const descripcion = formulario.elements.descripcion.value;
+      const valor = Number(formulario.elements.valor.value);
+      const fecha = formulario.elements.fecha.value;
+      const etiquetas = formulario.elements.etiquetas.value;
 
-    const etiquetasArray = (etiquetas && etiquetas.trim() !== "")
-      ? etiquetas.split(",").map(e => e.trim()).filter(Boolean)
-      : [];
+      const etiquetasArray = (etiquetas && etiquetas.trim() !== "")
+        ? etiquetas.split(",").map(e => e.trim()).filter(Boolean)
+        : [];
 
-    const body = {
-      descripcion,
-      valor,
-      fecha,
-      etiquetas: etiquetasArray
-    }
+      const body = {
+        descripcion,
+        valor,
+        fecha,
+        etiquetas: etiquetasArray
+      }
 
-    const resp = await fetch(urlApiBase(), {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body)
+      const resp = await fetch(urlApiBase(), {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body)
+      })
+
+      if (!resp.ok) {
+        throw new Error(`Error creando gasto API: ${resp.status}`);
+      }
+
+      await cargarGastosApi();
+
+      formulario.remove();
+      boton.removeAttribute("disabled");
+
     })
-
-    if (!resp.ok) {
-      throw new Error(`Error creando gasto API: ${resp.status}`);
-    }
-
-    await cargarGastosApi();
-  })
-}
+  }
 
   function manejarSubmit(event) {
     event.preventDefault();
@@ -578,8 +585,8 @@ if (formFiltrado) {
 const CLAVE_LOCALSTORAGE = "GestorGastosDWEC";
 
 function guardarGastosWeb() {
-  const gastos = gp.listarGastos();              
-  const texto = JSON.stringify(gastos);     
+  const gastos = gp.listarGastos();
+  const texto = JSON.stringify(gastos);
   localStorage.setItem(CLAVE_LOCALSTORAGE, texto);
 }
 function cargarGastosWeb() {
@@ -619,12 +626,12 @@ export async function cargarGastosApi() {
 
   const lista = await resp.json();
 
-const listaNormalizada = lista.map(g => ({
-  ...g,
-  id: g.gastoId  
-}))
-gp.cargarGastos(listaNormalizada);
-repintar();
+  const listaNormalizada = lista.map(g => ({
+    ...g,
+    id: g.gastoId
+  }))
+  gp.cargarGastos(listaNormalizada);
+  repintar();
 }
 
 const botonGuardar = document.getElementById("guardar-gastos");
