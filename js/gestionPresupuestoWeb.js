@@ -152,7 +152,7 @@ EditarHandleFormulario.prototype.handleEvent = function (event) {
       }
 
       await cargarGastosApi();
-      
+
       formulario.remove();
       boton.removeAttribute("disabled");
     })
@@ -240,6 +240,8 @@ CancelarHandleFormulario.prototype.handleEvent = function (event) {
 
 
 export function mostrarGastosAgrupadosWeb(idElemento, agrup, periodo = "mes") {
+  var divP = document.getElementById(idElemento);
+  divP.innerHTML = "";
   const cont = document.getElementById(idElemento);
   if (!cont || !agrup || typeof agrup !== "object") return;
 
@@ -273,6 +275,50 @@ export function mostrarGastosAgrupadosWeb(idElemento, agrup, periodo = "mes") {
   });
 
   cont.appendChild(wrap);
+  divP.style.width = "33%";
+  divP.style.display = "inline-block";
+
+  let chart = document.createElement("canvas");
+
+  let unit = "";
+  switch (periodo) {
+    case "anyo":
+      unit = "year";
+      break;
+    case "mes":
+      unit = "month";
+      break;
+    case "dia":
+    default:
+      unit = "day";
+      break;
+  }
+
+  const myChart = new Chart(chart.getContext("2d"), {
+    type: "bar",
+    data: {
+      datasets: [
+        {
+          label: `Gastos por ${periodo}`,
+          backgroundColor: "#555555",
+          data: agrup
+        }
+      ]
+    },
+    options: {
+      scales: {
+        x: {
+          type: "time",
+          time: { unit }
+        },
+        y: {
+          beginAtZero: true
+        }
+      }
+    }
+  });
+
+  divP.append(chart);
 }
 
 function ponerTituloAntesDe(idElemento, texto) {
@@ -302,6 +348,23 @@ export function repintar() {
   gp.listarGastos().forEach(gasto => {
     mostrarGastoWeb("listado-gastos-completo", gasto);
   });
+  mostrarGastosAgrupadosWeb(
+    "agrupacion-dia",
+    gp.agruparGastos("dia"),
+    "dia"
+  );
+
+  mostrarGastosAgrupadosWeb(
+    "agrupacion-mes",
+    gp.agruparGastos("mes"),
+    "mes"
+  );
+
+  mostrarGastosAgrupadosWeb(
+    "agrupacion-anyo",
+    gp.agruparGastos("anyo"),
+    "anyo"
+  );
 
 }
 
