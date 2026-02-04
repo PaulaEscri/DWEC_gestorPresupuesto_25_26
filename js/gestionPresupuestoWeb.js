@@ -352,6 +352,7 @@ export function repintar() {
     "agrupacion-dia",
     gp.agruparGastos("dia"),
     "dia"
+    
   );
 
   mostrarGastosAgrupadosWeb(
